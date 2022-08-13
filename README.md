@@ -26,6 +26,16 @@ while program_alive():
 
 ```
 
+Let's break down, what we've written.
+
+* First we'll import all the core element from pyfluffy.
+* Initialize window and other rects
+* Game Loop, `program_alive()` it returns bool if the program is still alive.
+* `clear_screen()` takes two arguments first one is window and second is color of the screen
+* `move()` takes two arguments first is object and tuple of `(movement_x, movement_y)`.
+* `draw_rect()` takes three arguments window, color, object.
+* finally, we've `update_screen()` that returns update of next frame
+
 ## What else you can do?
 
 It also has physics layer to interact with different objects in the world
@@ -67,4 +77,7 @@ while program_alive():
 - [x] Rendering
 - [x] Movement
 - [x] Basic Collision
-- [ ] AABB Collision
+- [x] AABB Collision
+- [x] FPS Lock
+- [ ] Clamp
+- [ ] Collision On Side (top, left, bottom, right)

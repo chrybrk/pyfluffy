@@ -12,6 +12,8 @@ fluffy_alive = true
 
 rect_id = 0; phy_mask = {}
 
+clock = pygame.time.Clock()
+
 # input keys
 DEFAULT_KEYS = {
             "right": {
@@ -118,6 +120,8 @@ def init_rect(x, y, w, h): return (pygame.Rect(x, y, w, h), get_rect_id())
 
 def draw_rect(window, color, rect): return pygame.draw.rect(window, color, rect[0])
 
+def fpsLock(fps): return clock.tick(fps)
+
 
 #############################################
 #           Physics and Movement            #
@@ -128,7 +132,10 @@ def set_phyics_layer(rect, mask_layer):
     phy_mask[rect[1]] = mask_layer
 
 def move(rect, movement):
-    res = basic_collision_testing(rect, movement)
+    rect[0].x += movement[0]
+    rect[0].y += movement[1]
+
+    res = AABB(rect, movement)
 
 def basic_collision_testing(rect, movement):
     result = [false, false, false, false]
@@ -136,9 +143,6 @@ def basic_collision_testing(rect, movement):
 
     col_lvl = 5
     a = rect[0]; mask = rect[1]
-
-    rect[0].x += movement[0]
-    rect[0].y += movement[1]
 
     if mask in phy_mask.keys():
         col = [i for i in phy_mask[mask] if i[0].colliderect(a)]
@@ -162,18 +166,35 @@ def basic_collision_testing(rect, movement):
     return result
 
 def AABB(rect, movement):
-    # FIXME: not implemented yet
-
-    result = [false, false, false, false] # top, bottom, left, right
+    result = [false, false, false, false]
     top = 0; bottom = 1; left = 2; right = 3
-    col_lvl = 5
 
-    if rect[1] in phy_mask.keys():
-        col = phy_mask[rect[1]]
+    col_lvl = 1
+    a = rect[0]; mask = rect[1]
 
-        for obj in col:
-            # TODO: return list of sides
-            a = obj[0]; b = rect[0]
-            AABB_RESULT = a.x < b.x + b.width and a.x + a.width > b.x and a.y < b.y + b.height and a.y + a.height > b.y
+    if mask in phy_mask.keys():
+        col = []
+
+        for layer in phy_mask[mask]:
+            b = layer[0]
+            if (a.x < b.x + b.width
+                and a.x + a.width > b.x
+                and a.y < b.y + b.height
+                and a.y + a.height > b.y): col.append(layer)
+
+        for test_col_rect in col:
+            b = test_col_rect[0]
+
+            if abs(b.left - a.right) < col_lvl and movement[0] > 0:
+                a.right = b.left + 1; result[right] = true
+
+            if abs(b.right - a.left) < col_lvl and movement[0] < 0:
+                a.left = b.right + 1; result[left] = true
+
+            if abs(b.top - a.bottom) < col_lvl and movement[1] > 0:
+                a.bottom = b.top + 1; result[bottom] = true
+
+            if abs(b.bottom - a.top) < col_lvl and movement[1] < 0:
+                a.top = b.bottom + 1; result[top] = true
 
     return result

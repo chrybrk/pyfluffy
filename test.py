@@ -12,8 +12,8 @@ while program_alive():
     clear_screen(window, (255, 255, 255))
 
     move(player, (
-        (get_action_strength_input("right") - get_action_strength_input("left")) * 2,
-        (get_action_strength_input("down") - get_action_strength_input("up")) * 2 
+        (get_action_strength_input("right") - get_action_strength_input("left")),
+        (get_action_strength_input("down") - get_action_strength_input("up")) 
         ))
 
     draw_rect(window, (0, 0, 0), player)
